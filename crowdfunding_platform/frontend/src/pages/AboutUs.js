@@ -6,10 +6,11 @@ const AboutUs = () => {
   return (
     <div className="bg-gray-100 min-h-screen pb-20">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="bg-white shadow-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center">
             <img src="/images/logo.png" alt="YPMN" className="h-8" />
+            <span className="ml-2 font-semibold text-green-700">YPMN PEDULI</span>
           </div>
         </div>
       </header>
@@ -18,7 +19,7 @@ const AboutUs = () => {
         <h1 className="text-2xl font-bold mb-4">Tentang Kami</h1>
         
         <div className="bg-white rounded-lg shadow p-4 mb-4">
-          <h2 className="text-xl font-semibold mb-2">YPMN (Yayasan Peduli Muslim Nusantara)</h2>
+          <h2 className="text-xl font-semibold mb-2">YPMN (Yayasan Peduli Masjid Nusantara)</h2>
           <p className="text-gray-600 mb-4">
             Kami adalah organisasi nirlaba yang berfokus pada pemberdayaan dan bantuan untuk muslim
             di seluruh Nusantara melalui berbagai program sosial dan kemanusiaan.
@@ -49,15 +50,15 @@ const AboutUs = () => {
         <div className="flex justify-around py-3">
           <Link to="/" className="flex flex-col items-center text-gray-600">
             <span className="material-icons">home</span>
-            <span className="text-xs">Home</span>
+            <span className="text-xs">Beranda</span>
           </Link>
           <Link to="/tentang-kami" className="flex flex-col items-center text-green-600">
             <span className="material-icons">group</span>
-            <span className="text-xs">Tentang Kami</span>
+            <span className="text-xs">Tentang</span>
           </Link>
           <Link to="/hubungi-kami" className="flex flex-col items-center text-gray-600">
             <span className="material-icons">phone</span>
-            <span className="text-xs">Hubungi Kami</span>
+            <span className="text-xs">Kontak</span>
           </Link>
         </div>
       </nav>

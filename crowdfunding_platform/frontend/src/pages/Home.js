@@ -1,14 +1,17 @@
 // pages/Home.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 const Home = () => {
   const [campaigns, setCampaigns] = useState([]);
+  const [featuredCampaigns, setFeaturedCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchTimeout, setSearchTimeout] = useState(null);
+  const [activeSlide, setActiveSlide] = useState(0);
+  const sliderInterval = useRef(null);
 
   const fetchCampaigns = async (search = '') => {
     try {
@@ -16,7 +19,16 @@ const Home = () => {
       const response = await axios.get('http://localhost:8000/api/campaigns/', {
         params: { search }
       });
+      
+      // Regular campaigns
       setCampaigns(response.data);
+      
+      // Featured campaigns for slider (take first 3 or filter by is_featured if available)
+      const featured = response.data.filter(campaign => 
+        campaign.is_featured || campaign.category === 'peduli'
+      ).slice(0, 3);
+      
+      setFeaturedCampaigns(featured.length > 0 ? featured : response.data.slice(0, 3));
     } catch (err) {
       console.error('Error fetching campaigns:', err);
       setError('Failed to load campaigns');
@@ -27,7 +39,29 @@ const Home = () => {
 
   useEffect(() => {
     fetchCampaigns();
+    
+    // Clean up function
+    return () => {
+      if (sliderInterval.current) {
+        clearInterval(sliderInterval.current);
+      }
+    };
   }, []);
+
+  // Set up automatic slider
+  useEffect(() => {
+    if (featuredCampaigns.length > 1) {
+      sliderInterval.current = setInterval(() => {
+        setActiveSlide(prev => (prev + 1) % featuredCampaigns.length);
+      }, 5000);
+    }
+    
+    return () => {
+      if (sliderInterval.current) {
+        clearInterval(sliderInterval.current);
+      }
+    };
+  }, [featuredCampaigns]);
 
   const handleSearchChange = (e) => {
     const query = e.target.value;
@@ -44,15 +78,26 @@ const Home = () => {
     setSearchTimeout(newTimeout);
   };
 
+  const goToSlide = (index) => {
+    setActiveSlide(index);
+    // Reset timer
+    if (sliderInterval.current) {
+      clearInterval(sliderInterval.current);
+    }
+    sliderInterval.current = setInterval(() => {
+      setActiveSlide(prev => (prev + 1) % featuredCampaigns.length);
+    }, 5000);
+  };
+
   return (
-    // Main wrapper with max width for mobile-like view
-    <div className="mx-auto max-w-md min-h-screen bg-gray-100 relative">
+    <div className="bg-gray-100 min-h-screen pb-20">
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-10">
         <div className="px-4 py-3">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
               <img src="/images/logo.png" alt="YPMN" className="h-8" />
+              <span className="ml-2 font-semibold text-green-700">YPMN PEDULI</span>
             </div>
             <div className="flex-1 max-w-[200px] ml-4">
               <input
@@ -69,13 +114,54 @@ const Home = () => {
 
       {/* Featured Campaign Slider */}
       <div className="px-4 pt-4">
-        <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-lg overflow-hidden">
-          <img 
-            src="/images/peduli-dhuafa-banner.jpg" 
-            alt="Featured Campaign"
-            className="w-full h-48 object-cover"
-          />
-        </div>
+        {featuredCampaigns.length > 0 && (
+          <div className="relative rounded-lg overflow-hidden h-48">
+            {/* Slides */}
+            <div className="h-full">
+              {featuredCampaigns.map((campaign, index) => (
+                <div 
+                  key={campaign.id}
+                  className={`absolute top-0 left-0 w-full h-full transition-opacity duration-500 ${
+                    index === activeSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
+                  }`}
+                >
+                  <img 
+                    src={campaign.thumbnail || '/images/peduli-dhuafa-banner.jpg'} 
+                    alt={campaign.title}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.src = '/images/peduli-dhuafa-banner.jpg';
+                    }}
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                    <h2 className="text-white font-bold text-lg">{campaign.title}</h2>
+                    <Link
+                      to={`/donasi/${campaign.slug || campaign.id}`}
+                      className="inline-block mt-2 px-4 py-1 bg-green-600 text-white rounded-md text-sm hover:bg-green-700"
+                    >
+                      DONASI SEKARANG
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {/* Indicators */}
+            {featuredCampaigns.length > 1 && (
+              <div className="absolute bottom-2 right-2 flex space-x-2 z-20">
+                {featuredCampaigns.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => goToSlide(index)}
+                    className={`w-2 h-2 rounded-full ${
+                      index === activeSlide ? 'bg-white' : 'bg-white/50'
+                    }`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Campaign Grid */}
@@ -99,7 +185,7 @@ const Home = () => {
                 <div className="p-3">
                   <h3 className="text-sm font-medium mb-2 line-clamp-2">{campaign.title}</h3>
                   <Link
-                    to={`/donasi/${campaign.slug}`}
+                    to={`/donasi/${campaign.slug || campaign.id}`}
                     className="block text-center bg-green-800 text-white py-2 rounded-md text-sm hover:bg-green-900"
                   >
                     DONASI SEKARANG
@@ -128,15 +214,15 @@ const Home = () => {
         <div className="flex justify-around py-3">
           <Link to="/" className="flex flex-col items-center text-green-600">
             <span className="material-icons">home</span>
-            <span className="text-xs">Home</span>
+            <span className="text-xs">Beranda</span>
           </Link>
           <Link to="/tentang-kami" className="flex flex-col items-center text-gray-600">
             <span className="material-icons">group</span>
-            <span className="text-xs">Tentang Kami</span>
+            <span className="text-xs">Tentang</span>
           </Link>
           <Link to="/hubungi-kami" className="flex flex-col items-center text-gray-600">
             <span className="material-icons">phone</span>
-            <span className="text-xs">Hubungi Kami</span>
+            <span className="text-xs">Kontak</span>
           </Link>
         </div>
       </nav>

@@ -77,8 +77,8 @@ const DonationForm = ({ campaign }) => {
   ];
   
   const paymentMethods = [
-    { id: 'bsi', name: 'Bank Syariah Indonesia', logo: '/images/bsi-logo.png' },
-    { id: 'bjb', name: 'Bank Jabar Banten Syariah', logo: '/images/bjb-logo.png' },
+    { id: 'bsi', name: 'BSI', logo: '/images/bsi-logo.png' },
+    { id: 'bjb', name: 'BJB Syariah', logo: '/images/bjb-logo.png' },
   ];
 
   const formik = useFormik({
@@ -221,6 +221,7 @@ const DonationForm = ({ campaign }) => {
         </SubmitButton>
       </form>
     </FormContainer>
+    
   );
 };
 
