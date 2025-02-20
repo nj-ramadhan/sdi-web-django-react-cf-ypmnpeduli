@@ -823,3 +823,4 @@ Use Gunicorn for Django in production
 Configure HTTPS with Let's Encrypt
 
 This guide provides a comprehensive blueprint for creating a crowdfunding platform similar to the one in your reference images. You'll need to customize and expand the implementation based on specific requirements, but this foundation covers all the major components needed for a functional crowdfunding site.
+```
