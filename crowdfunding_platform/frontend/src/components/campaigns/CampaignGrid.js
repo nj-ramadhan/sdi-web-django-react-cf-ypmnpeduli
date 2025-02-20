@@ -35,7 +35,7 @@ const CampaignGrid = () => {
             key={campaign.id} 
             className="bg-white rounded-lg shadow-md overflow-hidden"
           >
-            <div className="relative h-48">
+            <div className="relative h-24">
               <img
                 src={campaign.thumbnail || '/placeholder-image.jpg'}
                 alt={campaign.title}
