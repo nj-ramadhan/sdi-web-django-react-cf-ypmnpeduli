@@ -28,7 +28,7 @@ const Home = () => {
         campaign.is_featured || campaign.category === 'peduli'
       ).slice(0, 3);
       
-      setFeaturedCampaigns(featured.length > 0 ? featured : response.data.slice(0, 3));
+      setFeaturedCampaigns(featured.length > 0 ? featured : response.data.slice(0, 4));
     } catch (err) {
       console.error('Error fetching campaigns:', err);
       setError('Failed to load campaigns');
@@ -102,7 +102,7 @@ const Home = () => {
             <div className="flex-1 max-w-[200px] ml-4">
               <input
                 type="text"
-                placeholder="cari program"
+                placeholder="Cari Program"
                 value={searchQuery}
                 onChange={handleSearchChange}
                 className="w-full px-4 py-2 border rounded-full text-sm"
@@ -115,7 +115,7 @@ const Home = () => {
       {/* Featured Campaign Slider */}
       <div className="px-4 pt-4">
         {featuredCampaigns.length > 0 && (
-          <div className="relative rounded-lg overflow-hidden h-48">
+          <div className="relative rounded-lg overflow-hidden h-56">
             {/* Slides */}
             <div className="h-full">
               {featuredCampaigns.map((campaign, index) => (
@@ -128,7 +128,7 @@ const Home = () => {
                   <img 
                     src={campaign.thumbnail || '/images/peduli-dhuafa-banner.jpg'} 
                     alt={campaign.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-56 object-cover"
                     onError={(e) => {
                       e.target.src = '/images/peduli-dhuafa-banner.jpg';
                     }}
@@ -137,7 +137,7 @@ const Home = () => {
                     <h2 className="text-white font-bold text-lg">{campaign.title}</h2>
                     <Link
                       to={`/donasi/${campaign.slug || campaign.id}`}
-                      className="inline-block mt-2 px-4 py-1 bg-green-600 text-white rounded-md text-sm hover:bg-green-700"
+                      className="block text-center bg-green-800 text-white py-2 rounded-md text-sm hover:bg-green-900"
                     >
                       DONASI SEKARANG
                     </Link>
@@ -177,7 +177,7 @@ const Home = () => {
                 <img 
                   src={campaign.thumbnail || '/placeholder-image.jpg'} 
                   alt={campaign.title}
-                  className="w-full h-32 object-cover"
+                  className="w-full h-28 object-cover"
                   onError={(e) => {
                     e.target.src = '/placeholder-image.jpg';
                   }}

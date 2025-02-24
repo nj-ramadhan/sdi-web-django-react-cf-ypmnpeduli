@@ -23,10 +23,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-e3@58j4if$32_9ci87g6=1=6ls9p1mhpmr66x)y685y@*-$*a^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+# DEBUG = False
+# ALLOWED_HOSTS = ['njramadhan.pythonanywhere.com']
 
-ALLOWED_HOSTS = ['njramadhan.pythonanywhere.com']
-
+DEBUG = True
+ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -118,7 +119,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Jakarta'
 
 USE_I18N = True
 
@@ -148,8 +149,8 @@ REST_FRAMEWORK = {
 
 AUTH_USER_MODEL = 'accounts.User'
 
-# MEDIA_URL = '/media/'
-# MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
-STATIC_ROOT = '/home/njramadhan/sdi-web-django-react-cf-ypmnpeduli/static'
-MEDIA_ROOT = '/home/njramadhan/sdi-web-django-react-cf-ypmnpeduli/media'
+# STATIC_ROOT = '/home/njramadhan/sdi-web-django-react-cf-ypmnpeduli/static'
+# MEDIA_ROOT = '/home/njramadhan/sdi-web-django-react-cf-ypmnpeduli/media'

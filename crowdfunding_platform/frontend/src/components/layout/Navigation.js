@@ -4,21 +4,20 @@ import { Link } from 'react-router-dom';
 
 const Navigation = () => {
   return (
-    <nav className="bg-white shadow-lg">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="flex justify-between">
-          <div className="flex space-x-7">
-            <div>
-              <Link to="/" className="flex items-center py-4">
-                <span className="font-semibold text-gray-500 text-lg">YPMN PEDULI</span>
-              </Link>
-            </div>
-            {/* <div className="flex items-center space-x-1">
-              <Link to="/" className="py-4 px-2 text-gray-500 hover:text-gray-900">Home</Link>
-              <Link to="/about" className="py-4 px-2 text-gray-500 hover:text-gray-900">About</Link>
-            </div> */}
-          </div>
-        </div>
+    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t max-w-md mx-auto">
+      <div className="flex justify-around py-3">
+        <Link to="/" className="flex flex-col items-center text-green-600">
+          <span className="material-icons">home</span>
+          <span className="text-xs">Beranda</span>
+        </Link>
+        <Link to="/tentang-kami" className="flex flex-col items-center text-gray-600">
+          <span className="material-icons">group</span>
+          <span className="text-xs">Tentang</span>
+        </Link>
+        <Link to="/hubungi-kami" className="flex flex-col items-center text-gray-600">
+          <span className="material-icons">phone</span>
+          <span className="text-xs">Kontak</span>
+        </Link>
       </div>
     </nav>
   );
