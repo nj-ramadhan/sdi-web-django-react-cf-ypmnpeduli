@@ -1,6 +1,7 @@
 // pages/PaymentConfirmation.js
 import React, { useState, useRef } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
+import axios from 'axios';
 
 const PaymentConfirmation = () => {
   const location = useLocation();
@@ -25,7 +26,9 @@ const PaymentConfirmation = () => {
   const { 
     amount, 
     bank, 
-    campaignTitle
+    campaignTitle,
+    displayName, // Extract the Donatur's name
+    campaignSlug // Extract campaign slug
   } = location.state;
 
   // Format amount with dot thousand separator
@@ -75,7 +78,7 @@ const PaymentConfirmation = () => {
       });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!selectedFile) {
@@ -96,17 +99,35 @@ const PaymentConfirmation = () => {
         ---------------------%0A
         Bukti transfer telah saya upload. Mohon konfirmasi.`;
   
-    // Open WhatsApp with prepared message
-    window.open(`https://wa.me/6281312845576?text=${message}`, '_blank');
+        try {
+          // Send a request to update the donation amount
+          const response = await axios.post(
+            `http://localhost:8000/api/campaigns/${campaignSlug}/update-donation/`,
+            { amount: amount }
+          );
     
-    // Navigate to success page
-    navigate('/', {
-      state: {
-        campaign: campaignTitle,
-        amount: amount,
-        date: new Date().toISOString()
-      }
-    });
+          if (response.status === 200) {
+            // Open WhatsApp with prepared message
+            window.open(`https://wa.me/6281312845576?text=${message}`, '_blank');
+            
+            // Navigate to success page
+            navigate('/', {
+              state: {
+                campaign: campaignTitle,
+                amount: amount,
+                date: new Date().toISOString()
+              }
+            });
+          } else {
+            alert('Gagal memperbarui donasi. Silakan coba lagi.');
+          }
+        } catch (error) {
+          console.error('Error updating donation:', error);
+          alert('Terjadi kesalahan saat memperbarui donasi.');
+        }
+
+        window.open(`https://wa.me/6281312845576?text=${message}`, '_blank');
+
   };
 
   return (
@@ -125,7 +146,7 @@ const PaymentConfirmation = () => {
         {/* Thank you message */}
         <div className="text-center mb-6">
           <h1 className="text-xl font-medium text-gray-700">
-            Terimakasih (donatur)
+            Terimakasih, <span className="text-green-600">{displayName}</span>
           </h1>
           <p className="text-gray-600">
             atas Donasi yang akan anda berikan pada program :

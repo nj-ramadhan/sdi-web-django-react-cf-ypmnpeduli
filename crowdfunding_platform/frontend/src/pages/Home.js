@@ -174,6 +174,7 @@ const Home = () => {
           <div className="grid grid-cols-2 gap-4">
             {campaigns.map(campaign => (
               <div key={campaign.id} className="bg-white rounded-lg overflow-hidden shadow">
+                <Link to={`/kampanye/${campaign.slug || campaign.id}`}>
                 <img 
                   src={campaign.thumbnail || '/placeholder-image.jpg'} 
                   alt={campaign.title}
@@ -182,6 +183,7 @@ const Home = () => {
                     e.target.src = '/placeholder-image.jpg';
                   }}
                 />
+                </Link>
                 <div className="p-3">
                   <h3 className="text-sm font-medium mb-2 line-clamp-2">{campaign.title}</h3>
                   <Link

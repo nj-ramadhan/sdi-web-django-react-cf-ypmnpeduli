@@ -824,3 +824,155 @@ Configure HTTPS with Let's Encrypt
 
 This guide provides a comprehensive blueprint for creating a crowdfunding platform similar to the one in your reference images. You'll need to customize and expand the implementation based on specific requirements, but this foundation covers all the major components needed for a functional crowdfunding site.
 ```
+
+
+First, clone your repository in the VPS:
+
+bashCopycd /var/www
+git clone https://github.com/yourusername/sdi-web-django-react-cf-ypmnpeduli.git
+
+Set up Backend (Django):
+
+bashCopycd /var/www/sdi-web-django-react-cf-ypmnpeduli/crowdfunding_platform/backend
+
+# Create virtual environment
+python3 -m venv env
+source env/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+pip install gunicorn psycopg2-binary
+
+# Collect static files
+python manage.py collectstatic
+
+Set up Frontend (React):
+
+bashCopycd /var/www/sdi-web-django-react-cf-ypmnpeduli/crowdfunding_platform/frontend
+
+# Install dependencies and build
+npm install
+npm run build
+
+Configure Gunicorn:
+
+bashCopysudo nano /etc/systemd/system/gunicorn.service
+Add:
+iniCopy[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/sdi-web-django-react-cf-ypmnpeduli/crowdfunding_platform/backend
+ExecStart=/var/www/sdi-web-django-react-cf-ypmnpeduli/crowdfunding_platform/backend/env/bin/gunicorn \
+          --access-logfile - \
+          --workers 3 \
+          --bind unix:/run/gunicorn.sock \
+          crowdfunding_platform.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+
+Create Gunicorn Socket:
+
+bashCopysudo nano /etc/systemd/system/gunicorn.socket
+Add:
+iniCopy[Unit]
+Description=gunicorn socket
+
+[Socket]
+ListenStream=/run/gunicorn.sock
+
+[Install]
+WantedBy=sockets.target
+
+Start Gunicorn:
+
+bashCopysudo systemctl start gunicorn.socket
+sudo systemctl enable gunicorn.socket
+
+Configure Nginx:
+
+bashCopysudo nano /etc/nginx/sites-available/ypmn-peduli
+Add:
+nginxCopyserver {
+    listen 80;
+    server_name ypmn-peduli.org www.ypmn-peduli.org;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    
+    # Serve static files
+    location /static/ {
+        root /var/www/sdi-web-django-react-cf-ypmnpeduli/crowdfunding_platform/backend;
+    }
+
+    location /media/ {
+        root /var/www/sdi-web-django-react-cf-ypmnpeduli/crowdfunding_platform/backend;
+    }
+
+    # Serve React frontend
+    location / {
+        root /var/www/sdi-web-django-react-cf-ypmnpeduli/crowdfunding_platform/frontend/build;
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Backend API endpoints
+    location /api/ {
+        include proxy_params;
+        proxy_pass http://unix:/run/gunicorn.sock;
+    }
+
+    location /admin/ {
+        include proxy_params;
+        proxy_pass http://unix:/run/gunicorn.sock;
+    }
+}
+
+Enable the Site:
+
+bashCopysudo ln -s /etc/nginx/sites-available/ypmn-peduli /etc/nginx/sites-enabled
+sudo nginx -t
+sudo systemctl restart nginx
+
+Setup SSL with Let's Encrypt:
+
+bashCopysudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d ypmn-peduli.org -d www.ypmn-peduli.org
+
+Update Django Settings (backend/settings.py):
+
+pythonCopyDEBUG = False
+
+ALLOWED_HOSTS = ['ypmn-peduli.org', 'www.ypmn-peduli.org']
+
+STATIC_URL = '/static/'
+STATIC_ROOT = '/var/www/sdi-web-django-react-cf-ypmnpeduli/crowdfunding_platform/backend/static/'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = '/var/www/sdi-web-django-react-cf-ypmnpeduli/crowdfunding_platform/backend/media/'
+
+CORS_ALLOWED_ORIGINS = [
+    "https://ypmn-peduli.org",
+    "https://www.ypmn-peduli.org",
+]
+
+Set proper permissions:
+
+bashCopysudo chown -R www-data:www-data /var/www/sdi-web-django-react-cf-ypmnpeduli
+sudo chmod -R 755 /var/www/sdi-web-django-react-cf-ypmnpeduli
+
+Restart all services:
+
+bashCopysudo systemctl restart gunicorn
+sudo systemctl restart nginx
+
+Check status and logs if there are issues:
+
+bashCopysudo systemctl status gunicorn
+sudo systemctl status nginx
+sudo tail -f /var/log/nginx/error.log
+Make sure your domain's DNS is properly configured to point to your VPS IP address. After following these steps, your website should be accessible at https://ypmn-peduli.org.
+If you encounter any specific errors, let me know the error message and I can help you troubleshoot!

@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 // import Footer from './components/layout/Footer';
 import Home from './pages/Home';
 import DonationPage from './pages/DonationPage';
+import CampaignDetail from './pages/CampaignDetail';
 import PaymentConfirmation from './pages/PaymentConfirmation';
 import AboutUs from './pages/AboutUs';
 import ContactUs from './pages/ContactUs';
@@ -19,6 +20,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/donasi/:slug" element={<DonationPage />} />
+            <Route path="/kampanye/:slug" element={<CampaignDetail />} />
             <Route path="/konfirmasi-pembayaran" element={<PaymentConfirmation />} />
             <Route path="/tentang-kami" element={<AboutUs />} />
             <Route path="/hubungi-kami" element={<ContactUs />} />

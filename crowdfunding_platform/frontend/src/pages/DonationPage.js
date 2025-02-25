@@ -4,6 +4,19 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
+// Define category-based additional amounts
+const categoryAdditionalAmounts = {
+  dhuafa: {value: 100},
+  yatim: {value: 150},
+  quran: {value: 200},
+  qurban: {value: 250},
+  palestine: {value: 300},
+  education: {value: 350},  
+  iftar: {value: 400},
+  jumat: {value: 450},
+  default: {value: 500},
+};
+
 const DonationPage = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -94,10 +107,12 @@ const DonationPage = () => {
     
     // Prepare donation data
     const amount = selectedAmount === 'custom' ? parseInt(customAmount) : selectedAmount;
-    
-    // Generate random 3-digit code to make amount unique (like 500021)
-    const uniqueDigits = Math.floor(Math.random() * 900) + 100;
-    const finalAmount = Math.floor(amount / 1000) * 1000 + (uniqueDigits % 1000);
+
+    // Generate additional amount based on category
+    const category = campaign?.category || 'default';
+    const { value } = categoryAdditionalAmounts[category];
+    const uniqueDigits = value;
+    const finalAmount = Math.floor(amount / 1000) * 1000 + (uniqueDigits);
     
     // Set the display name based on hideIdentity checkbox
     const displayName = formData.hideIdentity ? "Hamba Allah" : formData.fullName;
@@ -133,13 +148,13 @@ const DonationPage = () => {
       {/* Header with program image - now dynamic */}
       <div className="bg-gradient-to-r from-green-500 to-green-600 relative">
         {loading ? (
-          <div className="w-full h-48 bg-green-500 animate-pulse"></div>
+          <div className="w-full h-58 bg-green-500 animate-pulse"></div>
         ) : (
           <>
             <img 
               src={campaign?.thumbnail || campaign?.banner || `/images/${slug}.jpg`}
               alt={campaign?.title || "Program Banner"}
-              className="w-full h-48 object-cover"
+              className="w-full h-58 object-cover"
               onError={(e) => {
                 e.target.src = '/images/default-campaign.jpg';
               }}
@@ -242,7 +257,7 @@ const DonationPage = () => {
               <input
                 type="text"
                 name="fullName"
-                placeholder="Nama Lengkap Anda"
+                placeholder="Nama Lengkap Anda (wajib diisi)"
                 className={`w-full p-3 rounded-lg border ${formData.hideIdentity ? 'bg-gray-100 border-gray-300' : 'border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500'} outline-none`}
                 value={formData.fullName}
                 onChange={handleInputChange}
@@ -255,10 +270,11 @@ const DonationPage = () => {
               <input
                 type="tel"
                 name="phone"
-                placeholder="No Whatsapp atau Handphone (opsional)"
+                placeholder="No Whatsapp atau Handphone (wajib diisi)"
                 className="w-full p-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-1 focus:ring-green-500 outline-none"
                 value={formData.phone}
                 onChange={handleInputChange}
+                required
               />
             </div>
 
