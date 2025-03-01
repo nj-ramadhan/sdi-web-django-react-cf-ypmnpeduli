@@ -1,8 +1,10 @@
 // pages/CampaignDetail.js
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
+import Header from '../components/layout/Header';
+import Navigation from '../components/layout/Navigation';
+import '../styles/Body.css';
 
 // Inline formatIDR function
 const formatIDR = (amount) => {
@@ -14,14 +16,22 @@ const formatIDR = (amount) => {
 const CampaignDetail = () => {
   const { slug } = useParams(); // Get the slug from the URL
   const [campaign, setCampaign] = useState(null);
+  const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('description'); // State to manage active tab
 
   useEffect(() => {
     const fetchCampaignDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/campaigns/${slug}/`);
-        setCampaign(response.data);
+        // Fetch campaign details
+        const campaignResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/campaigns/${slug}/`);
+        setCampaign(campaignResponse.data);
+    
+        // Fetch verified donations for the campaign
+        const donationsResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/donations/campaign/${slug}/donations/`);
+        setDonations(donationsResponse.data);
+    
       } catch (err) {
         console.error('Error fetching campaign details:', err);
         setError('Failed to load campaign details');
@@ -42,18 +52,8 @@ const CampaignDetail = () => {
   }
 
   return (
-    <div className="bg-gray-100 min-h-screen pb-20">
-      {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="px-4 py-3">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              <img src="/images/logo.png" alt="YPMN" className="h-8" />
-              <span className="ml-2 font-semibold text-green-700">YPMN PEDULI</span>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="body">
+      <Header />
 
       {/* Campaign Details */}
       <div className="px-4 py-4">
@@ -68,7 +68,6 @@ const CampaignDetail = () => {
           />
           <div className="p-4">
             <h1 className="text-xl font-bold mb-2">{campaign.title}</h1>
-            <p className="text-gray-700 mb-4">{campaign.description}</p>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">
                 Terkumpul: {campaign.current_amount ? formatIDR(campaign.current_amount) : 'Rp 0'}
@@ -108,24 +107,80 @@ const CampaignDetail = () => {
         </div>
       </div>
 
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t max-w-md mx-auto">
-        <div className="flex justify-around py-3">
-          <Link to="/" className="flex flex-col items-center text-green-600">
-            <span className="material-icons">home</span>
-            <span className="text-xs">Beranda</span>
-          </Link>
-          <Link to="/tentang-kami" className="flex flex-col items-center text-gray-600">
-            <span className="material-icons">group</span>
-            <span className="text-xs">Tentang</span>
-          </Link>
-          <Link to="/hubungi-kami" className="flex flex-col items-center text-gray-600">
-            <span className="material-icons">phone</span>
-            <span className="text-xs">Kontak</span>
-          </Link>
+      {/* Tab Navigation */}
+      <div className="mt-4 px-4">
+        <div className="flex justify-around bg-white border-b">
+          <button
+            className={`py-2 px-4 text-sm font-medium ${activeTab === 'description' ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-500'}`}
+            onClick={() => setActiveTab('description')}
+          >
+            Keterangan
+          </button>
+          <button
+            className={`py-2 px-4 text-sm font-medium ${activeTab === 'donations' ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-500'}`}
+            onClick={() => setActiveTab('donations')}
+          >
+            Donatur
+          </button>
+          <button
+            className={`py-2 px-4 text-sm font-medium ${activeTab === 'updates' ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-500'}`}
+            onClick={() => setActiveTab('updates')}
+          >
+            Kabar Terbaru
+          </button>
         </div>
-      </nav>
-      
+
+        {/* Tab Content */}
+        <div className="mt-4">
+          {activeTab === 'description' && (
+            <div className="bg-white p-4 rounded-lg shadow">
+              <p className="text-gray-700">{campaign.description}</p>
+            </div>
+          )}
+
+          {activeTab === 'donations' && (
+            <div className="bg-white p-4 rounded-lg shadow">
+              <ul>
+                  {donations.length > 0 ? (
+                  donations.map((donation, index) => (
+                    <li key={index} className="border-b py-2 px-4">
+                      <p className="text-gray-700">
+                        <strong>{donation.donor_name}</strong> - {formatIDR(donation.amount)}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {new Date(donation.created_at).toLocaleDateString()}
+                      </p>
+                    </li>
+                  ))
+                ) : (
+                  <li className="py-2 px-4 text-gray-500">Belum ada donasi yang terverifikasi.</li>
+                )}
+              </ul>
+            </div>
+          )}
+
+          {activeTab === 'updates' && (
+            <div className="bg-white p-4 rounded-lg shadow">
+              <ul>
+                {campaign.updates && campaign.updates.length > 0 ? (
+                  campaign.updates.map((update, index) => (
+                    <li key={index} className="border-b py-2">
+                      <p className="text-gray-700">
+                        <strong>{update.title}</strong> - {new Date(update.created_at).toLocaleDateString()}
+                      </p>
+                      <p className="text-sm text-gray-500">{update.description}</p>
+                    </li>
+                  ))
+                ) : (
+                  <p className="text-gray-500">Belum ada kabar terbaru.</p>
+                )}
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <Navigation />     
     </div>
   );
 };

@@ -1,12 +1,17 @@
+// components/layout/Footer.js
 import React from 'react';
+import '../../styles/Footer.css';
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-100 py-4">
-      <div className="container mx-auto text-center">
-        <p className="text-gray-600">© 2024 Your Crowdfunding Platform. All rights reserved.</p>
+    <Footer className="footer">
+      <div className="container">
+        <div className="flex items-center">
+          <img src="/images/logo.png" alt="YPMN" className="logo" />
+          <span className="title">YPMN PEDULI</span>
+        </div>
       </div>
-    </footer>
+    </Footer>
   );
 };
 

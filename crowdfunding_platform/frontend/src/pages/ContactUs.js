@@ -1,34 +1,19 @@
 // pages/AboutUs.js
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Header from '../components/layout/Header';
+import Navigation from '../components/layout/Navigation';
+import '../styles/Body.css';
 
 const ContactUs = () => {
   return (
-    <div className="bg-gray-100 min-h-screen pb-20">
-      {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center">
-            <img src="/images/logo.png" alt="YPMN" className="h-8" />
-            <span className="ml-2 font-semibold text-green-700">YPMN PEDULI</span>
-          </div>
-        </div>
-      </header>
+    <div className="body">
+      <Header />
 
       <div className="container mx-auto px-4 py-6">
         <h1 className="text-2xl font-bold mb-4">Hubungi Kami</h1>
         
         <div className="bg-white rounded-lg shadow p-4 mb-4">
           <h2 className="text-xl font-semibold mb-2">YPMN (Yayasan Peduli Masjid Nusantara)</h2>
-          
-          <div className="flex items-center mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-            <p className="text-gray-600">
-              Email: <a href="mailto:ypmnpeduli@gmail.com" className="text-blue-600 hover:underline">ypmnpeduli@gmail.com</a>
-            </p>
-          </div>
           
           <div className="flex items-center mb-3">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600 mr-2" viewBox="0 0 24 24" fill="currentColor">
@@ -45,29 +30,16 @@ const ContactUs = () => {
               Jl.Raya Barat No.207/B, RT.03/RW.12, Padasuka, Kec. Cimahi Tengah, Kota Cimahi, Jawa Barat, 40526 
             </p>
           </div>
-          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3961.167036784605!2d107.53002148594268!3d-6.870579149489281!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68e55bffbe5691%3A0x3e88c40c4d903405!2sYayasan%20Peduli%20Masjid%20Nusantara!5e0!3m2!1sen!2sid!4v1740021722748!5m2!1sen!2sid" width="380" height="500"></iframe>
-
+          <div className="iframe-container">
+          <iframe title="Location of Yayasan Peduli Masjid Nusantara" 
+          className="flex items-center max-w-md mx-auto" 
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3961.167036784605!2d107.53002148594268!3d-6.870579149489281!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68e55bffbe5691%3A0x3e88c40c4d903405!2sYayasan%20Peduli%20Masjid%20Nusantara!5e0!3m2!1sen!2sid!4v1740021722748!5m2!1sen!2sid" height="500"></iframe>
+          </div>
         </div>
       </div>
-
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t max-w-md mx-auto">
-        <div className="flex justify-around py-3">
-          <Link to="/" className="flex flex-col items-center text-gray-600">
-            <span className="material-icons">home</span>
-            <span className="text-xs">Beranda</span>
-          </Link>
-          <Link to="/tentang-kami" className="flex flex-col items-center text-gray-600">
-            <span className="material-icons">group</span>
-            <span className="text-xs">Tentang</span>
-          </Link>
-          <Link to="/hubungi-kami" className="flex flex-col items-center text-green-600">
-            <span className="material-icons">phone</span>
-            <span className="text-xs">Kontak</span>
-          </Link>
-        </div>
-      </nav>
+      <Navigation />
     </div>
+    
   );
 };
 

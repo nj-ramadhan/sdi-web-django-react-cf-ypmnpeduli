@@ -1,7 +1,10 @@
 // pages/PaymentConfirmation.js
 import React, { useState, useRef } from 'react';
-import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Header from '../components/layout/Header';
+import Navigation from '../components/layout/Navigation';
+import '../styles/Body.css';
 
 const PaymentConfirmation = () => {
   const location = useLocation();
@@ -27,7 +30,8 @@ const PaymentConfirmation = () => {
     amount, 
     bank, 
     campaignTitle,
-    displayName, // Extract the Donatur's name
+    donorName, // Extract the Donatur's name
+    donorPhone,
     campaignSlug // Extract campaign slug
   } = location.state;
 
@@ -37,14 +41,14 @@ const PaymentConfirmation = () => {
   // Bank account info based on selected bank
   const bankAccounts = {
     bsi: {
-      name: 'BSI',
+      name: 'bsi',
       number: '7139 7434 87',
-      fullName: 'Yayasan Peduli Masjid Nusantara'
+      fullName: 'Bank Syariah Indonesia'
     },
     bjb: {
-      name: 'BJB Syariah',
+      name: 'bjb',
       number: '5130 1020 01161',
-      fullName: 'Yayasan Peduli Masjid Nusantara'
+      fullName: 'Bank Jabar Banten Syariah'
     }
   };
 
@@ -80,73 +84,78 @@ const PaymentConfirmation = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+  
     if (!selectedFile) {
       alert('Mohon upload bukti transfer');
       return;
     }
-    
-    // Prepare WhatsApp message
-    const message = `*Konfirmasi Donasi YPMN*%0A
-        ---------------------%0A
-        *Program:* ${campaignTitle}%0A
-        *Jumlah:* Rp ${formattedAmount}%0A
-        *Bank Tujuan:* ${selectedBankInfo.name}%0A
-        *Tanggal Transfer:* ${formData.transferDate}%0A
-        *Pengirim:* ${formData.accountName}%0A
-        *Bank Pengirim:* ${formData.sourceBank || '-'}%0A
-        *No. Rekening:* ${formData.sourceAccount || '-'}%0A
-        ---------------------%0A
-        Bukti transfer telah saya upload. Mohon konfirmasi.`;
   
-        try {
-          // Send a request to update the donation amount
-          const response = await axios.post(
-            `http://localhost:8000/api/campaigns/${campaignSlug}/update-donation/`,
-            { amount: amount }
-          );
-    
-          if (response.status === 200) {
-            // Open WhatsApp with prepared message
-            window.open(`https://wa.me/6281312845576?text=${message}`, '_blank');
-            
-            // Navigate to success page
-            navigate('/', {
-              state: {
-                campaign: campaignTitle,
-                amount: amount,
-                date: new Date().toISOString()
-              }
-            });
-          } else {
-            alert('Gagal memperbarui donasi. Silakan coba lagi.');
-          }
-        } catch (error) {
-          console.error('Error updating donation:', error);
-          alert('Terjadi kesalahan saat memperbarui donasi.');
+    // Prepare donation data
+    const donationData = new FormData();
+    donationData.append('amount', amount);
+    donationData.append('donor_name', donorName);
+    donationData.append('donor_phone', donorPhone);
+    donationData.append('donor_email', formData.donor_email || '');
+    donationData.append('payment_method', selectedBankInfo.name);
+    donationData.append('source_bank', formData.sourceBank);
+    donationData.append('source_account', formData.sourceAccount);
+    donationData.append('transfer_date', formData.transferDate);
+    donationData.append('proof_file', selectedFile);
+  
+    try {
+      // Send a request to create a new donation
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_BASE_URL}/api/donations/${campaignSlug}/create-donation/`,  // Use campaign_slug
+        donationData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
         }
-
+      );
+  
+      if (response.status === 201) {
+        // Prepare WhatsApp message
+        const message = `*Konfirmasi Donasi YPMN*%0A
+            ---------------------%0A
+            *Program:* ${campaignTitle}%0A
+            *Jumlah:* Rp ${formattedAmount}%0A
+            *Bank Tujuan:* ${selectedBankInfo.fullName}%0A
+            *Tanggal Transfer:* ${formData.transferDate}%0A
+            *Pengirim:* ${formData.accountName}%0A
+            *Bank Pengirim:* ${formData.sourceBank || '-'}%0A
+            *No. Rekening:* ${formData.sourceAccount || '-'}%0A
+            ---------------------%0A
+            Bukti transfer telah saya upload. Mohon konfirmasi.`;
+  
+        // Open WhatsApp with prepared message
         window.open(`https://wa.me/6281312845576?text=${message}`, '_blank');
-
+  
+        // Navigate to success page
+        navigate('/', {
+          state: {
+            campaign: campaignTitle,
+            amount: amount,
+            date: new Date().toISOString(),
+          },
+        });
+      } else {
+        alert('Gagal membuat donasi. Silakan coba lagi.');
+      }
+    } catch (error) {
+      console.error('Error creating donation:', error);
+      alert('Terjadi kesalahan saat membuat donasi.');
+    }
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen pb-20">
-      {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center">
-            <img src="/images/logo.png" alt="YPMN" className="h-8" />
-            <span className="ml-2 font-semibold text-green-700">YPMN PEDULI</span>
-          </div>
-        </div>
-      </header>
-
-      <div className="max-w-md mx-auto px-4 pt-6">
+    <div className="body">
+      <Header />
+      <div className="container">   
         {/* Thank you message */}
         <div className="text-center mb-6">
           <h1 className="text-xl font-medium text-gray-700">
-            Terimakasih, <span className="text-green-600">{displayName}</span>
+            Terimakasih, <span className="text-green-600">{donorName}</span>
           </h1>
           <p className="text-gray-600">
             atas Donasi yang akan anda berikan pada program :
@@ -175,7 +184,7 @@ const PaymentConfirmation = () => {
                   Salin No Rek.
                 </button>
               </div>
-              <p className="text-gray-600">a.n. {selectedBankInfo.fullName}</p>
+              <p className="text-gray-600">a.n. Yayasan Peduli Masjid Nusantara</p>
             </div>
           </div>
         </div>
@@ -186,7 +195,7 @@ const PaymentConfirmation = () => {
             <div className="flex items-center mb-2">
               <div className="flex-1 flex justify-between items-center">
                 <h3 className="text-2xl font-bold">
-                  Rp <span className="text-green-500">{formattedAmount}</span>
+                  Rp. <span className="text-green-500">{formattedAmount}</span>
                 </h3>
                 <button 
                   onClick={() => copyToClipboard(amount, 'Nominal')}
@@ -325,23 +334,7 @@ const PaymentConfirmation = () => {
           </div>
         </div>
       </div>
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t max-w-md mx-auto">
-        <div className="flex justify-around py-3">
-          <Link to="/" className="flex flex-col items-center text-green-600">
-            <span className="material-icons">home</span>
-            <span className="text-xs">Beranda</span>
-          </Link>
-          <Link to="/tentang-kami" className="flex flex-col items-center text-gray-600">
-            <span className="material-icons">group</span>
-            <span className="text-xs">Tentang</span>
-          </Link>
-          <Link to="/hubungi-kami" className="flex flex-col items-center text-gray-600">
-            <span className="material-icons">phone</span>
-            <span className="text-xs">Kontak</span>
-          </Link>
-        </div>
-      </nav>
+      <Navigation />
     </div>
   );
 };
