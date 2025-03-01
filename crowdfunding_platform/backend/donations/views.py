@@ -1,4 +1,5 @@
 # donations/views.py
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -91,9 +92,11 @@ class UpdateDonationView(APIView):
                 'error': str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
 class CreateDonationView(APIView):
     def post(self, request, campaign_slug):
         try:
+            permission_classes = [IsAuthenticated]
             logger.info(f"Incoming request data: {request.data}")  # Log request data
             logger.info(f"Incoming files: {request.FILES}")  # Log uploaded files
 

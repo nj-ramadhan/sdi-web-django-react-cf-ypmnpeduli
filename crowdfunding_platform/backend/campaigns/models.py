@@ -37,7 +37,10 @@ class Campaign(models.Model):
         if self.target_amount == 0:
             return 0
         return min(100, (self.current_amount / self.target_amount) * 100)    
-    
+
+    def __str__(self):
+        return self.title       
+        
 class Update(models.Model):
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, related_name='updates')
     title = models.CharField(max_length=100)

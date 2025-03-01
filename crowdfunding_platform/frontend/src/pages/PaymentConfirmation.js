@@ -6,6 +6,14 @@ import Header from '../components/layout/Header';
 import Navigation from '../components/layout/Navigation';
 import '../styles/Body.css';
 
+const getCsrfToken = () => {
+  const cookieValue = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('csrftoken='))
+    ?.split('=')[1];
+  return cookieValue;
+};
+
 const PaymentConfirmation = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -84,6 +92,8 @@ const PaymentConfirmation = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    const csrfToken = getCsrfToken();
   
     if (!selectedFile) {
       alert('Mohon upload bukti transfer');
@@ -101,7 +111,19 @@ const PaymentConfirmation = () => {
     donationData.append('source_account', formData.sourceAccount);
     donationData.append('transfer_date', formData.transferDate);
     donationData.append('proof_file', selectedFile);
-  
+
+    const message = `*Konfirmasi Donasi YPMN*%0A
+        ---------------------%0A
+        *Program:* ${campaignTitle}%0A
+        *Jumlah:* Rp ${formattedAmount}%0A
+        *Bank Tujuan:* ${selectedBankInfo.fullName}%0A
+        *Tanggal Transfer:* ${formData.transferDate}%0A
+        *Pengirim:* ${formData.accountName}%0A
+        *Bank Pengirim:* ${formData.sourceBank || '-'}%0A
+        *No. Rekening:* ${formData.sourceAccount || '-'}%0A
+        ---------------------%0A
+        Bukti transfer telah saya upload. Mohon konfirmasi.`;
+              
     try {
       // Send a request to create a new donation
       const response = await axios.post(
@@ -110,24 +132,12 @@ const PaymentConfirmation = () => {
         {
           headers: {
             'Content-Type': 'multipart/form-data',
+            'X-CSRFToken': csrfToken,
           },
         }
       );
-  
-      if (response.status === 201) {
-        // Prepare WhatsApp message
-        const message = `*Konfirmasi Donasi YPMN*%0A
-            ---------------------%0A
-            *Program:* ${campaignTitle}%0A
-            *Jumlah:* Rp ${formattedAmount}%0A
-            *Bank Tujuan:* ${selectedBankInfo.fullName}%0A
-            *Tanggal Transfer:* ${formData.transferDate}%0A
-            *Pengirim:* ${formData.accountName}%0A
-            *Bank Pengirim:* ${formData.sourceBank || '-'}%0A
-            *No. Rekening:* ${formData.sourceAccount || '-'}%0A
-            ---------------------%0A
-            Bukti transfer telah saya upload. Mohon konfirmasi.`;
-  
+
+      if (response.status === 201) { 
         // Open WhatsApp with prepared message
         window.open(`https://wa.me/6281312845576?text=${message}`, '_blank');
   
@@ -219,16 +229,16 @@ const PaymentConfirmation = () => {
           <div className="p-4">
             <h3 className="text-xl font-bold mb-4">Konfirmasi Pembayaran</h3>
             
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4 mb-10">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700">
                     Transfer dari <span className="text-red-500">*</span>
                 </label>
                 <input
                     type="text"
                     name="sourceBank"
                     placeholder="Nama Bank Pengirim"
-                    className="w-full p-3 rounded-lg border border-gray-300 focus:border-green-500 focus:ring-1 focus:ring-green-500 outline-none"
+                    className="w-full p-3 rounded-lg border border-gray-300 focus:border-green-500 focus:ring-1 focus:ring-green-500 outline-none mb-2"
                     value={formData.sourceBank}
                     onChange={handleInputChange}
                     required
@@ -237,7 +247,7 @@ const PaymentConfirmation = () => {
                     type="text"
                     name="sourceAccount"
                     placeholder="Nomor Rekening Pengirim"
-                    className="w-full p-3 rounded-lg border border-gray-300 focus:border-green-500 focus:ring-1 focus:ring-green-500 outline-none"
+                    className="w-full p-3 rounded-lg border border-gray-300 focus:border-green-500 focus:ring-1 focus:ring-green-500 outline-none mb-2"
                     value={formData.sourceAccount}
                     onChange={handleInputChange}
                     required
@@ -246,7 +256,7 @@ const PaymentConfirmation = () => {
                   type="text"
                   name="accountName"
                   placeholder="Atas Nama (opsional)"
-                  className="w-full p-3 rounded-lg border border-gray-300 focus:border-green-500 focus:ring-1 focus:ring-green-500 outline-none"
+                  className="w-full p-3 rounded-lg border border-gray-300 focus:border-green-500 focus:ring-1 focus:ring-green-500 outline-none mb-2"
                   value={formData.accountName || ''}
                   onChange={handleInputChange}
                 />
