@@ -1,4 +1,3 @@
-// pages/CampaignDetail.js
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -6,11 +5,47 @@ import Header from '../components/layout/Header';
 import Navigation from '../components/layout/Navigation';
 import '../styles/Body.css';
 
+const getTimeElapsed = (createdAt) => {
+  const createdDate = new Date(createdAt); // Convert the donation creation time to a Date object
+  const now = new Date(); // Get the current time
+  const timeDifference = now - createdDate; // Calculate the difference in milliseconds
+
+  // Convert the time difference to seconds, minutes, hours, and days
+  const seconds = Math.floor(timeDifference / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  // Return the elapsed time in a human-readable format
+  if (days > 0) {
+    return `${days} hari lalu`;
+  } else if (hours > 0) {
+    return `${hours} jam lalu`;
+  } else if (minutes > 0) {
+    return `${minutes} menit lalu`;
+  } else {
+    return `${seconds} detik lalu`;
+  }
+};
+
 // Inline formatIDR function
 const formatIDR = (amount) => {
   return new Intl.NumberFormat('id-ID', {
     minimumFractionDigits: 0,
   }).format(amount);
+};
+
+// Helper function to check if a campaign is expired
+const isCampaignExpired = (deadline) => {
+  if (!deadline) return false; // Campaigns with no deadline never expire
+  return new Date(deadline) < new Date(); // Check if the deadline has passed
+};
+
+// Helper function to format the deadline
+const formatDeadline = (deadline) => {
+  if (!deadline) return 'tidak ada'; // Campaigns with no deadline
+  const date = new Date(deadline);
+  return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
 };
 
 const CampaignDetail = () => {
@@ -50,6 +85,9 @@ const CampaignDetail = () => {
   if (error) {
     return <div className="text-center py-8 text-red-500">{error}</div>;
   }
+
+  const isExpired = isCampaignExpired(campaign.deadline);
+  const deadlineText = formatDeadline(campaign.deadline);
 
   return (
     <div className="body">
@@ -95,14 +133,33 @@ const CampaignDetail = () => {
                   : 0}% tercapai
               </div>
             </div>
+
+            {/* Deadline */}
+            <p className="text-sm text-gray-600">
+              Batas waktu: {deadlineText}
+            </p>
+
+            {/* Expired Message */}
+            {isExpired && (
+              <p className="text-sm text-red-500">Kampanye ini telah berakhir.</p>
+            )}
           </div>
           <div className="p-3">
-            <Link
-              to={`/donasi/${campaign.slug || campaign.id}`}
-              className="block text-center bg-green-800 text-white py-2 rounded-md text-sm hover:bg-green-900"
-            >
-              DONASI SEKARANG
-            </Link>
+            {isExpired ? (
+              <button
+                className="w-full bg-gray-400 text-white py-2 rounded-md text-sm cursor-not-allowed"
+                disabled
+              >
+                DONASI SEKARANG
+              </button>
+            ) : (
+              <Link
+                to={`/donasi/${campaign.slug || campaign.id}`}
+                className="block text-center bg-green-800 text-white py-2 rounded-md text-sm hover:bg-green-900"
+              >
+                DONASI SEKARANG
+              </Link>
+            )}
           </div>    
         </div>
       </div>
@@ -120,13 +177,13 @@ const CampaignDetail = () => {
             className={`py-2 px-4 text-sm font-medium ${activeTab === 'donations' ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-500'}`}
             onClick={() => setActiveTab('donations')}
           >
-            Donatur
+            Donatur ({donations.length})
           </button>
           <button
             className={`py-2 px-4 text-sm font-medium ${activeTab === 'updates' ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-500'}`}
             onClick={() => setActiveTab('updates')}
           >
-            Kabar Terbaru
+            Kabar Terbaru ({campaign.updates ? campaign.updates.length : 0})
           </button>
         </div>
 
@@ -141,15 +198,20 @@ const CampaignDetail = () => {
           {activeTab === 'donations' && (
             <div className="bg-white p-4 rounded-lg shadow">
               <ul>
-                  {donations.length > 0 ? (
+                {donations.length > 0 ? (
                   donations.map((donation, index) => (
                     <li key={index} className="border-b py-2 px-4">
-                      <p className="text-gray-700">
-                        <strong>{donation.donor_name}</strong> - {formatIDR(donation.amount)}
-                      </p>
+                      <div className="flex justify-between items-center">
+                        <p className="text-gray-700">
+                          <strong>{donation.donor_name}</strong>
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {new Date(donation.created_at).toLocaleDateString()} - {getTimeElapsed(donation.created_at)}
+                        </p>
+                      </div>
                       <p className="text-sm text-gray-500">
-                        {new Date(donation.created_at).toLocaleDateString()}
-                      </p>
+                        Rp. {formatIDR(donation.amount)}
+                      </p>                      
                     </li>
                   ))
                 ) : (
@@ -164,10 +226,15 @@ const CampaignDetail = () => {
               <ul>
                 {campaign.updates && campaign.updates.length > 0 ? (
                   campaign.updates.map((update, index) => (
-                    <li key={index} className="border-b py-2">
-                      <p className="text-gray-700">
-                        <strong>{update.title}</strong> - {new Date(update.created_at).toLocaleDateString()}
-                      </p>
+                    <li key={index} className="border-b py-2 px-4">
+                      <div className="flex justify-between items-center">
+                        <p className="text-gray-700">
+                          <strong>{update.title}</strong>
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {new Date(update.created_at).toLocaleDateString()} - {getTimeElapsed(update.created_at)}
+                        </p>
+                      </div>
                       <p className="text-sm text-gray-500">{update.description}</p>
                     </li>
                   ))
