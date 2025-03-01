@@ -18,7 +18,7 @@ settings/local.py
 *.db
 
 # Ignore static files (if collected in production)
-staticfiles/
+static/
 
 # Ignore media files (user-uploaded files)
 media/
