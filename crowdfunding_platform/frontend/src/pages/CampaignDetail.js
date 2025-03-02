@@ -35,6 +35,13 @@ const formatIDR = (amount) => {
   }).format(amount);
 };
 
+const formatIDRTarget = (amount) => {
+  if (amount <= 0) return '∞';
+  return new Intl.NumberFormat('id-ID', {
+    minimumFractionDigits: 0,
+  }).format(amount);
+};
+
 // Helper function to check if a campaign is expired
 const isCampaignExpired = (deadline) => {
   if (!deadline) return false; // Campaigns with no deadline never expire
@@ -111,7 +118,7 @@ const CampaignDetail = () => {
                 Terkumpul: {campaign.current_amount ? formatIDR(campaign.current_amount) : 'Rp 0'}
               </span>
               <span className="text-sm text-gray-600">
-                Target: {campaign.target_amount ? formatIDR(campaign.target_amount) : 'Rp 0'}
+                Target: {campaign.target_amount ? formatIDRTarget(campaign.target_amount) : 'Rp 0'}
               </span>
             </div>
             
@@ -128,9 +135,9 @@ const CampaignDetail = () => {
                 ></div>
               </div>
               <div className="text-right text-xs text-gray-500 mt-1">
-                {campaign.current_amount && campaign.target_amount 
+                {campaign.target_amount > 0
                   ? Math.round((campaign.current_amount / campaign.target_amount) * 100) 
-                  : 0}% tercapai
+                  : 0} % tercapai
               </div>
             </div>
 
