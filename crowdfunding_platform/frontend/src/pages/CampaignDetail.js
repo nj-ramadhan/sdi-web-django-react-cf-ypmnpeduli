@@ -36,7 +36,7 @@ const formatIDR = (amount) => {
 };
 
 const formatIDRTarget = (amount) => {
-  if (amount <= 0) return '∞';
+  if (amount <= 0) return '\u221E';
   return new Intl.NumberFormat('id-ID', {
     minimumFractionDigits: 0,
   }).format(amount);
@@ -52,7 +52,11 @@ const isCampaignExpired = (deadline) => {
 const formatDeadline = (deadline) => {
   if (!deadline) return 'tidak ada'; // Campaigns with no deadline
   const date = new Date(deadline);
-  return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+  return date.toLocaleDateString('id-ID', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
 };
 
 const CampaignDetail = () => {
@@ -213,7 +217,7 @@ const CampaignDetail = () => {
                           <strong>{donation.donor_name}</strong>
                         </p>
                         <p className="text-sm text-gray-500">
-                          {new Date(donation.created_at).toLocaleDateString()} - {getTimeElapsed(donation.created_at)}
+                          {new Date(donation.created_at).toLocaleDateString('id-ID', {day: '2-digit',month: '2-digit',year: 'numeric',})} - {getTimeElapsed(donation.created_at)}
                         </p>
                       </div>
                       <p className="text-sm text-gray-500">
@@ -239,7 +243,7 @@ const CampaignDetail = () => {
                           <strong>{update.title}</strong>
                         </p>
                         <p className="text-sm text-gray-500">
-                          {new Date(update.created_at).toLocaleDateString()} - {getTimeElapsed(update.created_at)}
+                          {new Date(update.created_at).toLocaleDateString('id-ID', {day: '2-digit',month: '2-digit',year: 'numeric',})} - {getTimeElapsed(update.created_at)}
                         </p>
                       </div>
                       <p className="text-sm text-gray-500">{update.description}</p>

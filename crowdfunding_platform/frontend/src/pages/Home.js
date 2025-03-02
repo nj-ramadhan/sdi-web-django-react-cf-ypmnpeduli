@@ -12,7 +12,7 @@ const formatIDR = (amount) => {
 };
 
 const formatIDRTarget = (amount) => {
-  if (amount <= 0) return '∞';
+  if (amount <= 0) return '\u221E';
   return new Intl.NumberFormat('id-ID', {
     minimumFractionDigits: 0,
   }).format(amount);
@@ -26,7 +26,11 @@ const isCampaignExpired = (deadline) => {
 const formatDeadline = (deadline) => {
   if (!deadline) return 'tidak ada'; // Campaigns with no deadline
   const date = new Date(deadline);
-  return `${date.toLocaleDateString()}`;
+  return date.toLocaleDateString('id-ID', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
 };
 
 const Home = () => {
@@ -38,24 +42,21 @@ const Home = () => {
   const [searchTimeout, setSearchTimeout] = useState(null);
   const [activeSlide, setActiveSlide] = useState(0);
   const sliderInterval = useRef(null);
-    
-  // Fetch featured campaigns (only once when the component mounts)
+     
   useEffect(() => {
     const fetchFeaturedCampaigns = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_BASE_URL}/api/campaigns/`, 
-          { params: { is_featured: true } } // Fetch only featured campaigns
-        );
-        setFeaturedCampaigns(response.data.slice(0, 3)); // Take the first 3 featured campaigns
-      } catch (err) {
-        console.error('Error fetching featured campaigns:', err);
-        setError('Failed to load featured campaigns');
+        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/campaigns`);
+        console.log(response.data); // Log the API response
+        const featuredCampaigns = response.data.filter(campaign => campaign.is_featured === true);
+        setFeaturedCampaigns(featuredCampaigns.slice(0, 4));
+      } catch (error) {
+        console.error('Error fetching campaigns:', error);
       }
     };
   
     fetchFeaturedCampaigns();
-  }, []); // Empty dependency array ensures this runs only once
+  }, []);
   
   // Fetch regular campaigns (based on search query)
   const fetchCampaigns = async (search = '') => {
@@ -101,7 +102,7 @@ const Home = () => {
 
   // Set up automatic slider
   useEffect(() => {
-    if (featuredCampaigns.length > 1) {
+    if (featuredCampaigns.length > 0) {
       sliderInterval.current = setInterval(() => {
         setActiveSlide(prev => (prev + 1) % featuredCampaigns.length);
       }, 5000);
@@ -179,7 +180,7 @@ const Home = () => {
             </div>
             
             {/* Indicators */}
-            {featuredCampaigns.length > 1 && (
+            {featuredCampaigns.length > 0 && (
               <div className="absolute bottom-2 right-2 flex space-x-2 z-20">
                 {featuredCampaigns.map((_, index) => (
                   <button
