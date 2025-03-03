@@ -126,6 +126,11 @@ const Home = () => {
     }, 5000);
   };
 
+  // Sort campaigns based on the most donated
+  const sortedCampaigns = [...campaigns].sort((a, b) => {
+    return (b.current_amount || 0) - (a.current_amount || 0);
+  });
+
   return (
     <div className="body">
       <HeaderHome onSearch={handleSearch} />
@@ -205,7 +210,7 @@ const Home = () => {
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-4">
-            {campaigns.map(campaign => {
+            {sortedCampaigns.map(campaign => {
               const isExpired = isCampaignExpired(campaign.deadline);
               const deadlineText = formatDeadline(campaign.deadline);
 
