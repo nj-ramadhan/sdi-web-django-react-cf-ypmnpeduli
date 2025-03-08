@@ -27,6 +27,7 @@ if DEBUG:
     ALLOWED_HOSTS = []
 else:
     ALLOWED_HOSTS = ['ypmn-peduli.org', 'www.ypmn-peduli.org']
+    CSRF_TRUSTED_ORIGINS = ['https://ypmn-peduli.org', 'http://82.29.162.244']
 
 # Application definition
 INSTALLED_APPS = [
