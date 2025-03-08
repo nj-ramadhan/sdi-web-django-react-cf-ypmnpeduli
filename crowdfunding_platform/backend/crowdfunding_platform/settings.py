@@ -9,12 +9,11 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-import os
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -23,9 +22,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-e3@58j4if$32_9ci87g6=1=6ls9p1mhpmr66x)y685y@*-$*a^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = False
-# ALLOWED_HOSTS = ['njramadhan.pythonanywhere.com']
-
 DEBUG = True
 if DEBUG:
     ALLOWED_HOSTS = []
@@ -33,7 +29,6 @@ else:
     ALLOWED_HOSTS = ['ypmn-peduli.org', 'www.ypmn-peduli.org']
 
 # Application definition
-
 INSTALLED_APPS = [
     # Django apps
     'admin_interface',
@@ -47,7 +42,10 @@ INSTALLED_APPS = [
     
     # Third-party apps
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
+    'ckeditor',
+    'ckeditor_uploader',
     
     # Local apps
     'accounts',
@@ -88,7 +86,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'crowdfunding_platform.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -111,7 +108,6 @@ else:
         }
     }    
 
-
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
@@ -129,7 +125,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -156,7 +151,7 @@ CORS_ALLOWED_ORIGINS = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
@@ -178,3 +173,42 @@ else:
 
 # File upload settings
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB limit
+
+CKEDITOR_UPLOAD_PATH = "uploads/"
+CKEDITOR_IMAGE_BACKEND = "pillow"
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+        'extraPlugins': 'uploadimage',
+        'removePlugins': 'exportpdf',
+        'uploadUrl': '/ckeditor/upload/',
+        'clipboard_handleImages': False,
+    },
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log',  # Ensure this path is correct
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'barakah_app': {  # Replace 'myapp' with your app's name
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}

@@ -16,8 +16,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     path('api/donations/', include('donations.urls')),
-    path('api/campaigns/<slug:slug>/update-donation/', UpdateDonationView.as_view(), name='update-donation'),
-    path('api/donations/<slug:slug>/update-donation/', UpdateDonationView.as_view(), name='update-donation'),
+    
+    path('ckeditor/', include('ckeditor_uploader.urls')),    
     # path('api/auth/', include('accounts.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
