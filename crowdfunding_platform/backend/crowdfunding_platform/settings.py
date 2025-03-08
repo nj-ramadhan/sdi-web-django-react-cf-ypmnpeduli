@@ -206,7 +206,7 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True,
         },
-        'barakah_app': {  # Replace 'myapp' with your app's name
+        'crowdfunding_platform': {
             'handlers': ['console', 'file'],
             'level': 'DEBUG',
             'propagate': True,
