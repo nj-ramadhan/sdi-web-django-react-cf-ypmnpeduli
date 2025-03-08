@@ -168,8 +168,8 @@ if DEBUG:
     STATIC_ROOT = BASE_DIR / 'static'
     MEDIA_ROOT = BASE_DIR / 'media'
 else:
-    STATIC_ROOT = '/var/www/sdi-web-django-react-cf-ypmnpeduli/crowdfunding_platform/backend/static/'
-    MEDIA_ROOT = '/var/www/sdi-web-django-react-cf-ypmnpeduli/crowdfunding_platform/backend/media/'
+    STATIC_ROOT = '/var/www/ypmn-peduli/crowdfunding_platform/backend/static/'
+    MEDIA_ROOT = '/var/www/ypmn-peduli/crowdfunding_platform/backend/media/'
 
 # File upload settings
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB limit
