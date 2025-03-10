@@ -184,6 +184,7 @@ CKEDITOR_CONFIGS = {
         'removePlugins': 'exportpdf',
         'uploadUrl': '/ckeditor/upload/',
         'clipboard_handleImages': False,
+        'extraAllowedContent': 'iframe[*]; blockquote[*]; script[*]',
     },
 }
 

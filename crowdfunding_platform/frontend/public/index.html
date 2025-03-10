@@ -10,16 +10,30 @@
       name="description"
       content="Web site created using create-react-app"
     />
+    <meta property="og:title" content="BARAKAH APP" />
+    <meta property="og:type" content="website" />
+    <meta property="og:description" content="Yayasan Peduli Masjid Nusantara" />
+    <meta property="og:image" content="%PUBLIC_URL%/images/logo.png" />
+    <meta property="og:url" content="%PUBLIC_URL%" />    
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-C2Q1LLVW2S"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-C2Q1LLVW2S');
+    </script>
     <!-- Add this line here -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     
     <title>YPMN Peduli</title>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <noscript>Yayasan Peduli Masjid Nusantara</noscript>
     <div id="root"></div>
   </body>
 </html>
