@@ -19,7 +19,7 @@ const App = () => {
         <div className="w-full max-w-md bg-white min-h-screen relative">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/donasi/:slug" element={<DonationPage />} />
+            <Route path="/berdonasi/:slug" element={<DonationPage />} />
             <Route path="/kampanye/:slug" element={<CampaignDetail />} />
             <Route path="/konfirmasi-pembayaran" element={<PaymentConfirmation />} />
             <Route path="/tentang-kami" element={<AboutUs />} />
