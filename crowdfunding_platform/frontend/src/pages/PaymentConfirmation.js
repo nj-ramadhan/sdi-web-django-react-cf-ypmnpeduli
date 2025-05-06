@@ -199,6 +199,20 @@ const PaymentConfirmation = () => {
           </div>
         </div>
 
+        {/* QRIS card */}
+        <div className="bg-white rounded-lg shadow overflow-hidden mb-6">
+          <div className="p-4 flex items-center">
+            <img 
+              src={`/images/qris-ypmn.jpg`}
+              alt={'qris-ypmn'}
+              className="h-50 mr-4"
+            />
+          </div>
+          <div className="mb-4 flex items-center justify-center">
+              QRIS a.n. Yayasan Peduli Masjid Nusantara
+          </div>
+        </div>
+
         {/* Amount card */}
         <div className="bg-white rounded-lg shadow overflow-hidden mb-4">
           <div className="p-4">
