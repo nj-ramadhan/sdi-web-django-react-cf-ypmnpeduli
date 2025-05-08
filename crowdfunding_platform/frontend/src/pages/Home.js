@@ -151,6 +151,7 @@ const Home = () => {
                       index === activeSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
                     }`}
                   >
+                  <Link to={`/kampanye/${campaign.slug || campaign.id}`}>
                     <img 
                       src={campaign.thumbnail || '/images/peduli-dhuafa-banner.jpg'} 
                       alt={campaign.title}
@@ -159,6 +160,8 @@ const Home = () => {
                         e.target.src = '/images/peduli-dhuafa-banner.jpg';
                       }}
                     />
+                  </Link>
+
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
                       <h2 className="text-white font-bold text-lg">{campaign.title}</h2>
 

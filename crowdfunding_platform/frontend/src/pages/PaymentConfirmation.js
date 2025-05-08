@@ -174,44 +174,48 @@ const PaymentConfirmation = () => {
         </div>
 
         {/* Bank information card */}
-        <div className="bg-white rounded-lg shadow overflow-hidden mb-6">
-          <div className="p-4 flex items-center">
-            <img 
-              src={`/images/${bank}-logo.png`}
-              alt={selectedBankInfo.name}
-              className="h-10 mr-4"
-            />
-            <div className="flex-1">
-              <div className="flex justify-between items-center">
-                <h3 className="text-xl font-bold">{selectedBankInfo.number}</h3>
-                <button 
-                  onClick={() => copyToClipboard(selectedBankInfo.number, 'Nomor rekening')}
-                  className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded flex items-center text-sm"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                  </svg>
-                  Salin No Rek.
-                </button>
+        {bank !== "qris" && (
+          <div className="bg-white rounded-lg shadow overflow-hidden mb-6">
+            <div className="p-4 flex items-center">
+              <img 
+                src={`/images/${bank}-logo.png`}
+                alt={selectedBankInfo.name}
+                className="h-10 mr-4"
+              />
+              <div className="flex-1">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-xl font-bold">{selectedBankInfo.number}</h3>
+                  <button 
+                    onClick={() => copyToClipboard(selectedBankInfo.number, 'Nomor rekening')}
+                    className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded flex items-center text-sm"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    Salin No Rek.
+                  </button>
+                </div>
+                <p className="text-gray-600">a.n. Yayasan Peduli Masjid Nusantara</p>
               </div>
-              <p className="text-gray-600">a.n. Yayasan Peduli Masjid Nusantara</p>
             </div>
           </div>
-        </div>
+        )}
 
         {/* QRIS card */}
-        <div className="bg-white rounded-lg shadow overflow-hidden mb-6">
-          <div className="p-4 flex items-center">
-            <img 
-              src={`/images/qris-ypmn.jpg`}
-              alt={'qris-ypmn'}
-              className="h-50 mr-4"
-            />
+        {bank === "qris" && (        
+          <div className="bg-white rounded-lg shadow overflow-hidden mb-6">
+            <div className="p-4 flex items-center">
+              <img 
+                src={`/images/qris-ypmn.jpg`}
+                alt={'qris-ypmn'}
+                className="h-50 mr-4"
+              />
+            </div>
+            <div className="mb-4 flex items-center justify-center">
+                a.n. YPMN
+            </div>
           </div>
-          <div className="mb-4 flex items-center justify-center">
-              QRIS a.n. Yayasan Peduli Masjid Nusantara
-          </div>
-        </div>
+        )}
 
         {/* Amount card */}
         <div className="bg-white rounded-lg shadow overflow-hidden mb-4">

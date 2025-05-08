@@ -82,6 +82,11 @@ const DonationPage = () => {
       id: 'bjb',
       name: 'Bank BJB Syariah',
       logo: '/images/bjb-logo.png'
+    },
+    {
+      id: 'qris',
+      name: 'QRIS YPMN',
+      logo: '/images/qris.png'
     }
   ];
 
@@ -220,7 +225,7 @@ const DonationPage = () => {
                 onChange={(e) => setSelectedBank(e.target.value)}
                 className="mr-3 accent-green-600"
               />
-              <img src={bank.logo} alt={bank.name} className="h-6 mr-2" />
+              <img src={bank.logo} alt={bank.name} className="w-12 mr-4" />
               <span>{bank.name}</span>
             </label>
           ))}
