@@ -203,16 +203,25 @@ const PaymentConfirmation = () => {
 
         {/* QRIS card */}
         {bank === "qris" && (        
-          <div className="bg-white rounded-lg shadow overflow-hidden mb-6">
-            <div className="p-4 flex items-center">
+          <div className="p-4 bg-white rounded-lg shadow overflow-hidden mb-4">
+            <div className="flex items-center">
               <img 
                 src={`/images/qris-ypmn.jpg`}
                 alt={'qris-ypmn'}
-                className="h-50 mr-4"
+                className="h-50"
               />
             </div>
-            <div className="mb-4 flex items-center justify-center">
+            <div className="mb-2 flex items-center justify-center">
                 a.n. YPMN
+            </div>
+            <div className="mb-2 flex justify-center">
+              <a 
+                href="/images/qris-ypmn.jpg" 
+                download="qr-ypmn.jpg" 
+                className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium flex items-center justify-center"
+              >
+                DOWNLOAD QRIS
+              </a>
             </div>
           </div>
         )}
